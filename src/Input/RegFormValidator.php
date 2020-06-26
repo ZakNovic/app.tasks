@@ -1,8 +1,8 @@
 <?php
-namespace BeeJee\Input;
+namespace AppTask\Input;
 
 
-use BeeJee\Database\UserMapper;
+use AppTask\Database\UserMapper;
 
 class RegFormValidator
 {
@@ -22,7 +22,7 @@ class RegFormValidator
     {
         $result = false;
         $fieldname = 'reg_form_sent';
-        //если есть нужный hidden input
+        //if there is one hidden input
         
         if (array_key_exists($fieldname, $input)
              &&
@@ -45,11 +45,11 @@ class RegFormValidator
         $userName = $this->checkUsername($input);
         $exists = $this->doesExist($userName);
         if ($password === false) {
-            $errors[] = 'Введен некорректный пароль. Исправьте!';
+            $errors[] = 'Введен некорректный пароль.';
             $result = false;
         }
         if ($userName === false) {
-            $errors[] = 'Введенное имя недопустимо. Исправьте!';
+            $errors[] = 'Введенное имя недопустимо.';
             $result = false;
         }
         if ($exists === true) {
@@ -118,15 +118,15 @@ class RegFormValidator
     )
     {
         if (is_string($string)) {
-            //убираем белые символы, если включена опция
+            //remove spaces if the option is enabled
             if ($trimWhiteSpaces === true) {
                 $string = trim($string);
             }
-            //проверяем входные числа
+            //check the entered numbers
             if (!is_int($minlen) || !is_int($maxlen)) {
                 throw new \UnexpectedValueException('Length of string must be integer');
             }
-            //проверяем длину строки
+            //check the length of the string
             if ( (mb_strlen($string) >= $minlen
                     &&
                   mb_strlen($string) <= $maxlen)
@@ -134,7 +134,7 @@ class RegFormValidator
                 $result = $string;
             } else $result = false;
             
-            //дополнительные условия
+            //additional conditions
             if ($onlyLetters === true )
             {
                 if (!preg_match('/^\w+$/iu', $string) > 0) {

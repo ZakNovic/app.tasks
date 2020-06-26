@@ -1,19 +1,19 @@
 <?php
 
-use BeeJee\Controllers\ListController;
-use BeeJee\ErrorHelper;
-use BeeJee\FileSystem;
+use AppTask\Controllers\ListController;
+use AppTask\ErrorHelper;
+use AppTask\FileSystem;
 
 $root = dirname(__FILE__, 2);
-//автозагрузчик и объект PDO
+//autoloader and PDO object
 require_once ($root . '/bootstrap.php'); 
-//обработчик ошибок
+//error handler
 $errorHelper = new ErrorHelper(FileSystem::append([$root, 'templates'])); 
 try { 
     $controller = new ListController($root, $pdo);
-    //обработка get параметров
+    //processing get parameters
     $controller->get('taskAdded', function ($key, $value, ListController $c) {
-        $c->addMessage('Ваша задача успешно добавлена!');
+        $c->addMessage('Задача успешно добавлена...');
     });
     $controller->start();
     

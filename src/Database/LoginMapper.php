@@ -1,5 +1,5 @@
 <?php
-namespace BeeJee\Database;
+namespace AppTask\Database;
 
 
 class LoginMapper
@@ -23,7 +23,7 @@ class LoginMapper
     function getHash($loginID)
     {
         try {
-            $sql = 'SELECT `token` FROM `beejee_logins` WHERE `id` = :id';
+            $sql = 'SELECT `token` FROM `apptask_logins` WHERE `id` = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $loginID, \PDO::PARAM_INT);
             $result = $stmt->execute();
@@ -47,7 +47,7 @@ class LoginMapper
     function getUserID($loginID)
     {
         try {
-            $sql = 'SELECT `userid` FROM `beejee_logins` WHERE `id` = :id';
+            $sql = 'SELECT `userid` FROM `apptask_logins` WHERE `id` = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $loginID, \PDO::PARAM_INT);
             $result = $stmt->execute();
@@ -72,7 +72,7 @@ class LoginMapper
     function addLogin($token, $userid)
     {
         try {
-            $sql = 'INSERT INTO `beejee_logins`(`token`, `userid`) VALUES (:token, :userid)';
+            $sql = 'INSERT INTO `apptask_logins`(`token`, `userid`) VALUES (:token, :userid)';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':token', $token);
             $stmt->bindParam(':userid', $userid);
@@ -83,7 +83,7 @@ class LoginMapper
                 $result = false;
             }
         } catch (\PDOException $e) {
-            throw new \Exception('Ошибка при добавлении записи о логине.', 0, $e);
+            throw new \Exception('Ошибка при добавлении логина.', 0, $e);
         }
         return $result;
     }
@@ -101,12 +101,12 @@ class LoginMapper
     function deleteLoginsOfUser($userid)
     {
         try {
-            $sql = 'DELETE FROM `beejee_logins` WHERE `userid` = :userid';
+            $sql = 'DELETE FROM `apptask_logins` WHERE `userid` = :userid';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':userid', $userid, \PDO::PARAM_INT);
             $result = $stmt->execute();
         } catch (\PDOException $e) {
-            throw new \Exception('Ошибка при удалении логинов пользователя.', 0, $e);
+            throw new \Exception('Ошибка при удалении пользователя.', 0, $e);
         }
         return $result;
     }

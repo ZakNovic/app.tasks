@@ -6,7 +6,7 @@
  * Time: 3:47
  */
 
-namespace BeeJee;
+namespace AppTask;
 
 
 class ErrorHelper {
@@ -51,9 +51,9 @@ class ErrorHelper {
                 break;
             case self::APP_IN_PRODUCTION:
                 $userMes = 'Encountered error, logs are sent to developer. Please, try again later!';
-                //форматируем текст для записи в лог-файл
+                //format the text to write to the log file
                 $text = self::excepTextRecursive($e);
-                //добавляем дату в начало
+                //add date to the beginning
                 array_unshift($text, date('d-M-Y H:i:s') . ' ');
                 $text[] = 'UserID = ' . $userID;
                 $this->addToLog($text, $this->logFile);
@@ -110,7 +110,7 @@ class ErrorHelper {
      */
     function renderFatalErrorAndExit($error, $whereToRedirect)
     {
-        $text = array("Произошла фатальная ошибка, выполнение приложения прекращается: ");
+        $text = array("Произошла ошибка, выполнение приложения прекращается: ");
         $text = array_merge($text, self::errorToArray($error));
         $this->renderErrorPageAndExit($text, $whereToRedirect);
     }
@@ -147,15 +147,15 @@ class ErrorHelper {
         $text[] = "Возникла ошибка, выполнение приложения могло бы быть продолжено:";
         $text[] = 'текст: ';
         $text[] = ErrorHelper::splitErrMes($errstr);
-        $text[] = 'файл: ' . $errfile . ',';
+        $text[] = 'файл: ' . $errfile . ','; //TODO
         $text[] = 'строка:' . $errline . '.';
         switch ($this->fallBackStatus) {
             case self::APP_IN_DEVELOPMENT:
-                //отображаем ошибку пользователю
+                //display error to user
                 $this->renderErrorPageAndExit($text, '');
                 break;
             case self::APP_IN_PRODUCTION:
-                //пишем ошибку в лог
+                //write an error to the log
                 $this->addToLog($text, $this->logFile);
         }
     }
@@ -166,11 +166,11 @@ class ErrorHelper {
         if (isset($error['type']) && $error['type'] === E_ERROR) {
             switch ($this->fallBackStatus) {
                 case self::APP_IN_DEVELOPMENT:
-                    //отображаем ошибку пользователю
+                    //display error to user
                     $this->renderFatalErrorAndExit($error, '');
                     break;
                 case self::APP_IN_PRODUCTION:
-                    //пишем ошибку в лог
+                    //write an error to the log
                     $text = array("Возникла ошибка, выполнение приложения прекращено:");
                     $text = array_merge($text, self::errorToArray($error));
                     $this->addToLog($text, $this->logFile);

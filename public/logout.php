@@ -1,12 +1,12 @@
 <?php
-use BeeJee\Controllers\LoginController;
-use BeeJee\ErrorHelper;
-use BeeJee\FileSystem;
+use AppTask\Controllers\LoginController;
+use AppTask\ErrorHelper;
+use AppTask\FileSystem;
 
 $root = dirname(__FILE__, 2);
-//автозагрузчик и объект PDO
+//autoloader and PDO object
 require_once ($root . '/bootstrap.php');
-//обработчик ошибок
+//error handler
 $errorHelper = new ErrorHelper(FileSystem::append([$root, 'templates']));
 try {
     $controller = new LoginController($root, $pdo);

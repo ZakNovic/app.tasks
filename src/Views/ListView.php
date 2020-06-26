@@ -1,8 +1,8 @@
 <?php
-namespace BeeJee\Views;
+namespace AppTask\Views;
 
 
-use BeeJee\FileSystem;
+use AppTask\FileSystem;
 
 class ListView extends CommonView
 {
@@ -34,7 +34,7 @@ class ListView extends CommonView
         $tasks    = $params['tasks'];
         $messages = $params['messages'];
         $queries  = $params['queries'];
-        //параметры для навбара-логина
+        //parameters for navbar login
         $authorized = $params['authorized'];
         $isAdmin = $params['is_admin'];
         $usernameDisplayed = $params['username'];
@@ -44,19 +44,19 @@ class ListView extends CommonView
         } else {
             foreach ($tasks as $task) {
                 $array = $task->getArray();
-                //вручную меняем php-значения на их текстовый вид
+                //manually change php values to their text view
                 if ($array['fulfilled'] === false) {
                     $array['fulfilled'] = 'Не выполнено';
                 } else {
                     $array['fulfilled'] = 'Выполнено';
                 }
-                //наконец, добавляем массив в список задач
+                //add an array to task list
                 $content[] = $array;
             }
             $tasks = $content;
         }
        
-        //загружаем шаблон, который использует вышеописанные переменные
+        //load a template that uses above variables
         $template = $this->twig->load('list.html.twig');
         echo $template->render(array(
             'tasks'    => $tasks,

@@ -1,9 +1,9 @@
 <?php
-namespace BeeJee\Database;
+namespace AppTask\Database;
 
 
-use BeeJee\SearchData;
-use BeeJee\Task;
+use AppTask\SearchData;
+use AppTask\Task;
 
 class TaskMapper
 {
@@ -22,7 +22,7 @@ class TaskMapper
     function getTask($id)
     {
         try {
-            $sql = 'SELECT `userid`, `username`, `e-mail`, `text`, `img_path_rel`, `fulfilled` FROM `beejee_tasks` WHERE `id` = :id';
+            $sql = 'SELECT `userid`, `username`, `e-mail`, `text`, `fulfilled` FROM `apptask_tasks` WHERE `id` = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
             $result = $stmt->execute();
@@ -33,7 +33,6 @@ class TaskMapper
                     $assoc['username'],
                     $assoc['e-mail'],
                     $assoc['text'],
-                    $assoc['img_path_rel'],
                     (bool)$assoc['fulfilled']);
             }
         } catch (\PDOException $e) {
@@ -58,8 +57,8 @@ class TaskMapper
             $tasks = array();
         
             $sql = "SELECT SQL_CALC_FOUND_ROWS
-                    `id`, `userid`, `username`, `e-mail`, `text`, `img_path_rel`, `fulfilled`
-                    FROM `beejee_tasks`
+                    `id`, `userid`, `username`, `e-mail`, `text`, `fulfilled`
+                    FROM `apptask_tasks`
                     ORDER BY `$sortBy` $order
                     LIMIT :limit OFFSET :offset";
             
@@ -76,7 +75,7 @@ class TaskMapper
         
             $this->lastCount = $this->foundRows();
         } catch (\PDOException $e) {
-            throw new \Exception('Ошибка при получении данных студентов', 0, $e);
+            throw new \Exception('Ошибка при получении данных пользователей', 0, $e);
         }
         return $tasks;
     }
@@ -86,22 +85,20 @@ class TaskMapper
      * @param $userid
      * @param $text
      * @param $email
-     * @param $imgPathRel
      * @return Task|bool
      * @throws \Exception
      */
-    function addTask(UserMapper $userMapper, $userid, $email, $text, $imgPathRel)
+    function addTask(UserMapper $userMapper, $userid, $email, $text)
     {
         try {
             $username = $userMapper->getUser($userid)->getName();
-            $sql = 'INSERT INTO `beejee_tasks`(`userid`, `username`, `e-mail`, `text`, `img_path_rel`, `fulfilled`)
-                    VALUES (:userid, :username, :email, :text, :imgPathRel, :fulfilled)';
+            $sql = 'INSERT INTO `apptask_tasks`(`userid`, `username`, `e-mail`, `text`, `fulfilled`)
+                    VALUES (:userid, :username, :email, :text, :fulfilled)';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':userid', $userid, \PDO::PARAM_INT);
             $stmt->bindParam(':username', $username);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':text', $text);
-            $stmt->bindParam(':imgPathRel', $imgPathRel);
             $stmt->bindValue(':fulfilled', false,\PDO::PARAM_INT);
             $result = $stmt->execute();
             
@@ -134,7 +131,7 @@ class TaskMapper
     function changeText($taskID, $newText)
     {
         try {
-            $sql = 'UPDATE `beejee_tasks` SET `text` = :text WHERE `id` = :id';
+            $sql = 'UPDATE `apptask_tasks` SET `text` = :text WHERE `id` = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $taskID, \PDO::PARAM_INT);
             $stmt->bindParam(':text', $newText);
@@ -154,7 +151,7 @@ class TaskMapper
     function changeStatus($taskID, $fulfilled)
     {
         try {
-            $sql = 'UPDATE `beejee_tasks` SET `fulfilled` = :status WHERE `id` = :id';
+            $sql = 'UPDATE `apptask_tasks` SET `fulfilled` = :status WHERE `id` = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $taskID, \PDO::PARAM_INT);
             $status = (int)$fulfilled;
@@ -191,7 +188,7 @@ class TaskMapper
                 $count = false;
             }
         } catch (\PDOException $e) {
-            throw new \Exception('Ошибка при получении числа записей студентов', 0, $e);
+            throw new \Exception('Ошибка при получении числа записей пользователей', 0, $e);
         }
         
         return $count;
@@ -213,10 +210,9 @@ class TaskMapper
      */
     private function convertToObject($row)
     {
-        $required = array('id' => 1, 'userid' => 2, 'username' => 3, 'e-mail' => 4, 'text' => 5,
-            'img_path_rel' => 6, 'fulfilled' => 7);
+        $required = array('id' => 1, 'userid' => 2, 'username' => 3, 'e-mail' => 4, 'text' => 5, 'fulfilled' => 7);
         if (( !is_array($row) )  || ( !empty(array_diff_key($required, $row)) )) {
-            throw new \Exception('Строка не содержит нужных данных');
+            throw new \Exception('Строка не содержит правильных данных');
         }
         
         $task = new Task((int)$row['id'],
@@ -224,7 +220,6 @@ class TaskMapper
                          (string)$row['username'],
                          (string)$row['e-mail'],
                          (string)$row['text'],
-                         (string)$row['img_path_rel'],
                          (bool)$row['fulfilled']);
         return $task;
     }

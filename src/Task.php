@@ -1,6 +1,6 @@
 <?php
 
-namespace BeeJee;
+namespace AppTask;
 
 class Task
 {
@@ -9,17 +9,15 @@ class Task
     private $username;
     private $email;
     private $text;
-    private $imgPathRel;
     private $fulfilled;
     
-    public function __construct($id, $userid, $username, $email, $text, $imgPathRel, $fulfilled)
+    public function __construct($id, $userid, $username, $email, $text, $fulfilled)
     {
         $this->setId($id);
         $this->setUserid($userid);
         $this->setUsername($username);
         $this->setEmail($email);
         $this->setText($text);
-        $this->setImgPathRel($imgPathRel);
         $this->setFulfilled($fulfilled);
     }
     
@@ -112,22 +110,6 @@ class Task
     }
     
     /**
-     * @param mixed $imgPathRel
-     */
-    public function setImgPathRel($imgPathRel)
-    {
-        $this->imgPathRel = $imgPathRel;
-    }
-    
-    /**
-     * @return mixed
-     */
-    public function getImgPathRel()
-    {
-        return $this->imgPathRel;
-    }
-    
-    /**
      * @param boolean $fulfilled
      */
     public function setFulfilled($fulfilled)
@@ -157,7 +139,6 @@ class Task
             'username'   => $this->getUsername(),
             'email'      => $this->getEmail(),
             'text'       => $this->getText(),
-            'imgPathRel' => $this->getImgPathRel(),
             'fulfilled'  => $this->getFulfilled()
         );
         return $result;

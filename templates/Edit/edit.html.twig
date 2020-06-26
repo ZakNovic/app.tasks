@@ -15,8 +15,7 @@
 	<form action="/edit.php" method="post">
 		<div class="form-group">
 			<label for="task_text" title="Максимум 2000 знаков">Текст задачи номер {{ task_id }}</label>
-			<textarea cols="80" rows="10" class="form-control"
-			          name="task_text" id="task_text">{{ task_text }}</textarea>
+			<textarea cols="80" rows="10" class="form-control" name="task_text" id="task_text">{{ task_text }}</textarea>
 		</div>
 		<div class="form-group">
 			<input type="hidden" name="task_id" value="{{ task_id }}">

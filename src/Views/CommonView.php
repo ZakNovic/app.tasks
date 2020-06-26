@@ -1,8 +1,8 @@
 <?php
-namespace BeeJee\Views;
+namespace AppTask\Views;
 /**
  * Abstract Class CommonView
- * @package BeeJee\Views
+ * @package AppTask\Views
  */
 abstract class CommonView
 {
@@ -70,9 +70,9 @@ abstract class CommonView
      */
     function render($params)
     {
-        //посылаем нужный заголовок
+        //send desired header
         header('Content-type: text/html; charset=utf-8');
-        //отсылаем страницу пользователю
+        //send page to user
         $contents = $this->output($params);
         echo $contents;
         exit;

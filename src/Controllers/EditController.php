@@ -1,15 +1,15 @@
 <?php
-namespace BeeJee\Controllers;
+namespace AppTask\Controllers;
 
 
-use BeeJee\Database\TaskMapper;
-use BeeJee\Database\UserMapper;
-use BeeJee\FileSystem;
-use BeeJee\Input\NewTaskValidator;
-use BeeJee\LoginManager;
-use BeeJee\Views\EditView;
+use AppTask\Database\TaskMapper;
+use AppTask\Database\UserMapper;
+use AppTask\FileSystem;
+use AppTask\Input\NewTaskValidator;
+use AppTask\LoginManager;
+use AppTask\Views\EditView;
 
-class EditController extends PageController
+class EditController extends AppController
 {
     private $root;
     private $pdo;
@@ -23,25 +23,25 @@ class EditController extends PageController
     
     function start()
     {
-        //для редактирования задачи
+        //to edit task
         $taskmapper = new TaskMapper($this->pdo);
-        //проверяем, имеет ли пользователь права на редактирование
+        //check if the user has edit rights
         $userMapper = new UserMapper($this->pdo);
         $loginMan  = new LoginManager($userMapper, $this->pdo);
-        //проверяем логин пользователя (если есть)
+        //check user login (if any)
         $authorized = $loginMan->isLogged();
-        //админ ли?
+        //admin check
         $isAdmin = $loginMan->isAdmin();
         if ($authorized AND $isAdmin) {
             $statusChanged = $this->checkAndChangeStatus($_POST, $taskmapper);
-            //проверяем в инпуте наличие айди, без него - исключение
+            //check the presence of id in the input, without it - an exception
             $taskID = $this->checkTaskID($_POST);
             $editResult = $this->checkAndChangeNewText($_POST, $taskmapper);
-            //если успешно отредактировали текст -> возвращаемся на главную
+            //if you have successfully edited the text -> go back to the main
             if ($editResult) {
                 $this->redirect('list.php');
             } else {
-                //если нет - показываем окошко редактирования
+                //if not, show the edit window
                 $taskText = $taskmapper->getTask($taskID)->getText();
                 $view = new EditView(FileSystem::append([$this->root, 'templates']));
                 $view->render([
@@ -68,12 +68,12 @@ class EditController extends PageController
     {
         if (array_key_exists('task_id', $input)) {
             return (int)$input['task_id'];
-        } else throw new \Exception('ID задачи не указан перед редактированием. Аборт.');
+        } else throw new \Exception('ID задачи не указан до редактирования.');
     }
     
     function checkAndChangeNewText($input, TaskMapper $taskmapper )
     {
-        //если отослана форма редактирования вместе с ID задачи
+        //if the editing form is submitted with the task ID
         if (array_key_exists('edit_form_sent', $input)
               AND
             $input['edit_form_sent'] === '1'

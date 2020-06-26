@@ -1,5 +1,5 @@
 <?php
-namespace BeeJee;
+namespace AppTask;
 
 
 class User

@@ -1,14 +1,14 @@
 <?php
 
-use BeeJee\Controllers\TaskController;
-use BeeJee\ErrorHelper;
-use BeeJee\FileSystem;
+use AppTask\Controllers\TaskController;
+use AppTask\ErrorHelper;
+use AppTask\FileSystem;
 
 $root = dirname(__FILE__, 2);
 $public = __DIR__;
-//автозагрузчик и объект PDO
+//autoloader and PDO object
 require_once ($root . '/bootstrap.php');
-//обработчик ошибок
+//error handler
 $errorHelper = new ErrorHelper(FileSystem::append([$root, 'templates']));
 try {
     $controller = new TaskController($root, $public, $pdo);

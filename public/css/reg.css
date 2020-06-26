@@ -14,7 +14,9 @@ body {
 nav {
     font-size: 1.1em;
 }
-
+.navbar-header > p{
+    margin: 0;
+}
 
 /* изменение цвета навбара при наведении */
 ul.nav.navbar-nav  li:hover {

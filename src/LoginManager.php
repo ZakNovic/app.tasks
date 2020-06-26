@@ -1,9 +1,9 @@
 <?php
-namespace BeeJee;
+namespace AppTask;
 
 
-use BeeJee\Database\LoginMapper;
-use BeeJee\Database\UserMapper;
+use AppTask\Database\LoginMapper;
+use AppTask\Database\UserMapper;
 
 class LoginManager
 {
@@ -55,27 +55,27 @@ class LoginManager
      */
     function checkLoginForm($input)
     {
-        //проверяем наличие данных для логина
+        //check the availability of data for login
         if  (array_key_exists('login_form_sent', $input)
             AND
              array_key_exists('navbar_username', $input)
             AND
              array_key_exists('navbar_pwd', $input)
         ) {
-            //фильтруем их
+            //filter data
             $password = (string)$input['navbar_pwd'];
             $name = (string)$input['navbar_username'];
             $hash = $this->mapper->getHashByName($name);
-            //проверяем полученный хеш (если ошибка, вместо него false)
+            //check the received hash (if an error, false instead)
             if ($hash !== false) {
-                //проверка совпадения
+                //match check
                 if (password_verify($password, $hash)) {
-                    //если пользователь дал корректные данные, получаем его ID и возвращаем
+                    //if the user entered the correct data, we get his ID and return
                     $result = $this->mapper->getUserByName($name)->getId();
                 } else {
                     $result = false;
                 }
-                //проверка, не обновился ли стандартный способ хэширования в php
+                //check if the standard hash method in php has been updated
                 if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
                     $hash = password_hash($password, PASSWORD_DEFAULT);
                     $this->mapper->changeHashForUser($name, $hash);
@@ -97,13 +97,13 @@ class LoginManager
     function persistLogin($userid)
     {
         $loginMapper = new LoginMapper($this->pdo);
-        //случайный токен для хранения в куках
+        //random cookie token
         $token = self::genRandString(24);
         //его хеш для хранения в бд
         $tokenHash = hash('sha256', $token);
-        //идентификатором пользователя будет ID записи логина в бд
+        //user identifier will be ID of login entry in db
         $id = $loginMapper->addLogin($tokenHash, $userid);
-        //если запись в бд прошла успешно, записываем данные о логине в куки
+        //if record in db was successful, write login information in cookies
         if ($id != false) {
             setcookie('login_id', $id, time()+60*60*24, null, null, null, true);
             setcookie('token', $token,   time()+60*60*24, null, null, null, true);
@@ -122,24 +122,24 @@ class LoginManager
      */
     function isLogged()
     {
-        //проверяем наличие в куки данных
-        if  (array_key_exists('login_id', $_COOKIE) AND is_string($_COOKIE['login_id']) //проверка на массив
+        //check the availability of data in cookies
+        if  (array_key_exists('login_id', $_COOKIE) AND is_string($_COOKIE['login_id'])
             AND
             array_key_exists('token', $_COOKIE) AND is_string($_COOKIE['token'])
         ) {
             $loginID = (int)$_COOKIE['login_id'];
             $token = (string)$_COOKIE['token'];
             $loginMapper = new LoginMapper($this->pdo);
-            //проверяем наличие id (серии) токена в бд
+            //check for id (series) of the token in db
             $hash = $loginMapper->getHash($loginID);
-            //делаем что-то только если хэш  найден в базе
+            //do something only if hash is found in db
             if ($hash != false) {
-                //если хэши из бд и куки совпали
+                //if hashes from db and cookies match
                 if (hash_equals($hash, hash('sha256', $token))) {
-                    //пользователь обладает нужными данными - он залогинен
+                    //user has necessary data - he is logged in
                     $this->islogged = true;
                 } else {
-                    //пользователь дал нужный айди, но провалил проверку пароля => воровство
+                    //the user gave the desired ID, but failed the password check => theft
                     $this->islogged = false;
                 }
                 
@@ -157,16 +157,16 @@ class LoginManager
     {
         $result = false;
         if ( $this->isLogged() ) {
-            //если залогинены, то в куки есть айди
+            //if logged in, then cookie has an ID
             $loginID = $_COOKIE['login_id'];
-            //вызываем мапперы для доступа к бд
+            //we call mappers for access to a DB
             $loginMapper = new LoginMapper($this->pdo);
             $userMapper = $this->mapper;
-            //получем из записи о логине айди пользователя
+            //get from record about login user id
             $userid = $loginMapper->getUserID($loginID);
-            //получем его имя
+            //get username
             $username = $userMapper->getUser($userid)->getName();
-            //сравниваем
+            //compare
             if ($username === 'admin') {
                 $result = true;
             } else $result = false;
@@ -182,12 +182,12 @@ class LoginManager
     {
         $userid = false;
         if ( $this->isLogged() ) {
-            //если залогинены, то в куки есть айди
+            //if logged in, then cookie has an ID
             $loginID = $_COOKIE['login_id'];
-            //вызываем мапперы для доступа к бд
+            //we call mappers for access to a DB
             $loginMapper = new LoginMapper($this->pdo);
             $userMapper = $this->mapper;
-            //получем из записи о логине айди пользователя
+            //get from record about login user id
             $userid = $loginMapper->getUserID($loginID);
         }
         return $userid;
@@ -201,14 +201,14 @@ class LoginManager
     {
         $username = false;
         if ( $this->isLogged() ) {
-            //если залогинены, то в куки есть айди
+            //if logged in, then cookie has an ID
             $loginID = $_COOKIE['login_id'];
-            //вызываем мапперы для доступа к бд
+            //we call mappers for access to a DB
             $loginMapper = new LoginMapper($this->pdo);
             $userMapper = $this->mapper;
-            //получем из записи о логине айди пользователя
+            //get from record about login user id
             $userid = $loginMapper->getUserID($loginID);
-            //получем его имя
+            //get username
             $username = $userMapper->getUser($userid)->getName();
         }
         return $username;

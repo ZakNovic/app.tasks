@@ -6,18 +6,18 @@
  * Time: 19:11
  */
 
-namespace BeeJee\Controllers;
+namespace AppTask\Controllers;
 
 
-use BeeJee\Database\TaskMapper;
-use BeeJee\Database\UserMapper;
-use BeeJee\FileSystem;
-use BeeJee\Input\ImageLoaderBase64;
-use BeeJee\Input\NewTaskValidator;
-use BeeJee\LoginManager;
-use BeeJee\Views\TaskView;
+use AppTask\Database\TaskMapper;
+use AppTask\Database\UserMapper;
+use AppTask\FileSystem;
+use AppTask\Input\ImageLoaderBase64;
+use AppTask\Input\NewTaskValidator;
+use AppTask\LoginManager;
+use AppTask\Views\TaskView;
 
-class TaskController extends PageController
+class TaskController extends AppController
 {
     private $root;
     private $public;
@@ -44,29 +44,27 @@ class TaskController extends PageController
         $taskMapper = new TaskMapper($pdo);
         $validator = new NewTaskValidator();
         $loginMan  = new LoginManager($userMapper, $pdo);
-        //проверяем логин пользователя (если есть)
+        //check user login (if any)
         $authorized = $loginMan->isLogged();
-        //если залогинены - запоминаем имя
+        //if the user is login - save the name
         if ($authorized === true) {
             $usernameDisplayed = $loginMan->getLoggedName();
         } else {
             $usernameDisplayed = '';
         }
         
-        $dataBack  = array();  // значения неправильных входных данных
+        $dataBack  = array();  //invalid input values
    
-        //проверяем, были ли посланы данные формы
+        //form submission verification
         if ($validator->dataSent($_POST)) {
-            //проверяем, правильно ли они заполнены
+            //check validate
             $data = $validator->checkInput($_POST, $this->errors);
             if ($data !== false) {
-                //если пользователь авторизован - используем его аккаунт, иначе аккаунт Гостя
+                //if the user is authorized, we use his account, otherwise the Guest account
                 $taskUsername = $authorized ? $usernameDisplayed : 'Guest';
                 $userID = $userMapper->getIdFromName($taskUsername);
-                //сохраняем картинку
-                $data['img_path_rel'] = $this->saveImage($public, 'uploads', $data['imageBase64']);
                 //добавляем запись с расчитанными и проверенными параметрами
-                $taskMapper->addTask($userMapper, $userID, $data['email'], $data['task_text'], $data['img_path_rel']);
+                $taskMapper->addTask($userMapper, $userID, $data['email'], $data['task_text']);
                 $this->redirect('list.php?taskAdded');
             } else {
                 $dataBack['email'] = $_POST['email'];
@@ -82,18 +80,5 @@ class TaskController extends PageController
             'authorized' => $authorized,
             'username'   => $usernameDisplayed
         ]);
-    }
-    
-    protected function saveImage($root, $dir, $imageBase64)
-    {
-        $imageLoader = new ImageLoaderBase64(
-            array('image/jpeg', 'image/png', 'image/gif'),
-            array('jpg', 'jpeg', 'png', 'gif')
-        );
-        $saveDir = FileSystem::append([$root, $dir]);
-        $fileName = $imageLoader->saveFile($imageBase64, 'png', $saveDir);
-        if ($fileName !== false) {
-            return $fileName;
-        } else throw new \Exception("Cannot save image at $saveDir");
     }
 }

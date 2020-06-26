@@ -1,9 +1,9 @@
 <?php
-namespace BeeJee\Controllers;
+namespace AppTask\Controllers;
 
 
 
-class PageController
+class AppController
 {
     protected $requests;
     protected $messages;

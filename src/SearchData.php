@@ -1,9 +1,9 @@
 <?php
-namespace BeeJee;
+namespace AppTask;
 
 class SearchData
 {
-    //критерии поиска в базе данных
+    //database search criteria
     private $text   = '';
     private $field  = '';
     private $sortby = '';

@@ -1,8 +1,8 @@
 <?php
-namespace BeeJee\Input;
+namespace AppTask\Input;
 
 
-use BeeJee\FileSystem;
+use AppTask\FileSystem;
 
 class NewTaskValidator
 {
@@ -37,46 +37,20 @@ class NewTaskValidator
         $result = true;
         $email = $this->checkEmail($input);
         $taskText = $this->checkTaskText($input);
-        $image = $this->checkImage($input, 320, 240);
         //if there are errors, save them
         if ($email === false) {
-            $errors[] = 'Введен неправильный адрес почты. Исправьте!';
+            $errors[] = 'Вы ввели некорректный Email';
             $result = false;
         }
         if ($taskText === false) {
-            $errors[] = 'Ваш текст превысил пределы.';
-            $result = false;
-        }
-        
-        if ($image === false) {
-            $errors[] = 'Попытка залить картинку с некорректными размерами. ';
+            $errors[] = 'Размер текста задачи слишком большой';
             $result = false;
         }
         //if there are no errors
         if ($result !== false) {
-            $result = ['email' => $email, 'task_text' => $taskText, 'imageBase64' => $image];
+            $result = ['email' => $email, 'task_text' => $taskText];
         }
         
-        return $result;
-    }
-    
-    private function checkImage($input, $widthMax, $heightMax)
-    {
-        if (array_key_exists('imageblob', $input) AND is_string($input['imageblob'])
-            AND
-            array_key_exists('image', $input) AND is_string($input['image'])
-        ) {
-            $imageBase64 = $input['imageblob'];
-            $name = $input['image'];
-            $imageLoader = new ImageLoaderBase64(
-                array('image/jpeg', 'image/png', 'image/gif'),
-                array('jpg', 'jpeg', 'png', 'gif')
-            );
-            $check = $imageLoader->checkImage($imageBase64, $name, $widthMax, $heightMax);
-            if ($check === true) {
-                $result = $imageBase64;
-            } else $result = false;
-        } else $result = false;
         return $result;
     }
     
@@ -98,7 +72,7 @@ class NewTaskValidator
      */
     public function checkEmail($input)
     {
-        //проверяем наличие почты и её соответствие RFC, иначе - false
+        //we check the availability of mail and its compliance with RFC, else - false
         if (array_key_exists('email', $input)) {
             $email = trim($input['email']);
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -130,15 +104,15 @@ class NewTaskValidator
     )
     {
         if (is_string($string)) {
-            //убираем белые символы, если включена опция
+            //remove spaces if the option is enabled
             if ($trimWhiteSpaces === true) {
                 $string = trim($string);
             }
-            //проверяем входные числа
+            //check the entered numbers
             if (!is_int($minlen) || !is_int($maxlen)) {
                 throw new \UnexpectedValueException('Length of string must be integer');
             }
-            //проверяем длину строки
+            //check the length of the string
             if ( (mb_strlen($string) >= $minlen
                 &&
                 mb_strlen($string) <= $maxlen)
@@ -146,7 +120,7 @@ class NewTaskValidator
                 $result = $string;
             } else $result = false;
             
-            //дополнительные условия
+            //additional conditions
             if ($onlyLetters === true )
             {
                 if (!preg_match('/^\w+$/iu', $string) > 0) {

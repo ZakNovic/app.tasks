@@ -1,16 +1,16 @@
 <?php
-namespace BeeJee\Controllers;
+namespace AppTask\Controllers;
 
-use BeeJee\Database\TaskMapper;
-use BeeJee\Database\UserMapper;
-use BeeJee\FileSystem;
-use BeeJee\Input\SearchQueryValidator;
-use BeeJee\LoginManager;
-use BeeJee\Pager;
-use BeeJee\SearchData;
-use BeeJee\Views\ListView;
+use AppTask\Database\TaskMapper;
+use AppTask\Database\UserMapper;
+use AppTask\FileSystem;
+use AppTask\Input\SearchQueryValidator;
+use AppTask\LoginManager;
+use AppTask\Pager;
+use AppTask\SearchData;
+use AppTask\Views\ListView;
 
-class ListController extends PageController
+class ListController extends AppController
 {
     private $root;
     private $pdo;
@@ -35,34 +35,33 @@ class ListController extends PageController
         $pager     = new Pager();
         $messages  = array();
         
-        //инициализируем мапперы для бд
+        //initialize the mappers for the database
         $userMapper = new UserMapper($pdo);
         $loginMan  = new LoginManager($userMapper, $pdo);
-        //проверяем логин пользователя (если есть)
+        //check user login (if any)
         $authorized = $loginMan->isLogged();
-        //админ ли?
+        //admin check
         $isAdmin = $loginMan->isAdmin();
-        //если залогинены - запоминаем имя
+        //if the user is login - save the name
         if ($authorized === true) {
             $usernameDisplayed = $loginMan->getLoggedName();
         } else {
             $usernameDisplayed = '';
         }
         
-        //получаем данные для db query
+        //get data for db query
         $searchData = $validator->genSearchData($_GET);
+
         try {
             $pdo->beginTransaction();
             $tasks = $mapper->getTasks($searchData);
         } catch (\Throwable $e) {
-            //если ошибка - откатываемся и передаём наверх
+            //if an error - roll back and pass up
             $pdo->rollBack();
-            throw new \Exception('Ошибка во время получения задач из бд', 0, $e);
+            throw new \Exception('Ошибка во время получения задач из базы данных', 0, $e);
         }
-        //превращаем относительные пути к картинкам в абсолютные
-        $tasks = $this->setImagePathFull($tasks);
         $entriesCount = $mapper->getEntriesCount();
-        //полное число найденных результатов для последнего поискового запроса
+        //total number of results found for the last search query
         $queries = $pager->getQueries($_GET, $entriesCount);
         $view = new ListView( FileSystem::append([$this->root, 'templates']) );
         $view->render([
@@ -73,16 +72,5 @@ class ListController extends PageController
             'is_admin' => $isAdmin,
             'username'   => $usernameDisplayed
         ]);
-    }
-    
-    private function setImagePathFull($tasks)
-    {
-        if (is_array($tasks) AND !empty($tasks)) {
-            foreach ($tasks as $task) {
-                $fullpath = "http://" . $_SERVER['SERVER_NAME'] . '/uploads/' . $task->getImgPathRel();
-                $task->setImgPathRel($fullpath);
-            }
-        }
-        return $tasks;
     }
 }

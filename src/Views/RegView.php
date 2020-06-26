@@ -1,8 +1,8 @@
 <?php
-namespace BeeJee\Views;
+namespace AppTask\Views;
 
 
-use BeeJee\FileSystem;
+use AppTask\FileSystem;
 
 class RegView  extends CommonView
 {
@@ -30,11 +30,11 @@ class RegView  extends CommonView
         $messages = $params['messages'];
         $errors   = $params['errors'];
         $dataBack = $params['databack'];
-        //параметры для навбара-логина
+        //parameters for navbar login
         $authorized = $params['authorized'];
         $usernameDisplayed = $params['username'];
         
-        //загружаем шаблон, который использует вышеописанные переменные
+        //load a template that uses above variables
         $template = $this->twig->load('reg.html.twig');
         echo $template->render(array(
             'errors'   => $errors,

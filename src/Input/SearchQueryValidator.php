@@ -1,9 +1,9 @@
 <?php
-namespace BeeJee\Input;
+namespace AppTask\Input;
 
 
-use BeeJee\Pager;
-use BeeJee\SearchData;
+use AppTask\Pager;
+use AppTask\SearchData;
 
 
 class SearchQueryValidator

@@ -6,16 +6,16 @@
  * Time: 0:49
  */
 
-namespace BeeJee\Controllers;
+namespace AppTask\Controllers;
 
 
-use BeeJee\Database\UserMapper;
-use BeeJee\FileSystem;
-use BeeJee\Input\RegFormValidator;
-use BeeJee\LoginManager;
-use BeeJee\Views\RegView;
+use AppTask\Database\UserMapper;
+use AppTask\FileSystem;
+use AppTask\Input\RegFormValidator;
+use AppTask\LoginManager;
+use AppTask\Views\RegView;
 
-class RegController extends PageController
+class RegController extends AppController
 {
     private $root;
     private $pdo;
@@ -40,18 +40,18 @@ class RegController extends PageController
         $mapper    = new UserMapper($pdo);
         $validator = new RegFormValidator($mapper);
         $loginMan  = new LoginManager($mapper, $pdo);
-        //проверяем логин пользователя (если есть)
+        //check user login (if any)
         $authorized = $loginMan->isLogged();
-        //если залогинены - запоминаем имя
+        //if the user is login - save the name
         if ($authorized === true) {
             $usernameDisplayed = $loginMan->getLoggedName();
         } else {
             $usernameDisplayed = '';
         }
-        $dataBack  = array();  // значения неправильных входных данных
-        //проверяем, были ли посланы данные формы
+        $dataBack  = array();  //invalid input values
+        //form submission verification
         if ($validator->dataSent($_POST)) {
-            //проверяем, правильно ли они заполнены
+            //check validate
             $data = $validator->checkInput($_POST, $this->errors);
             if ($data !== false) {
                 $user = $loginMan->registerUser($data['username'], $data['password']);

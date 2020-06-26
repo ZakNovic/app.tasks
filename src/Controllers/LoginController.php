@@ -1,11 +1,11 @@
 <?php
-namespace BeeJee\Controllers;
+namespace AppTask\Controllers;
 
 
-use BeeJee\Database\UserMapper;
-use BeeJee\LoginManager;
+use AppTask\Database\UserMapper;
+use AppTask\LoginManager;
 
-class LoginController extends PageController
+class LoginController extends AppController
 {
     private $root;
     private $pdo;
@@ -19,19 +19,19 @@ class LoginController extends PageController
     
     function start()
     {
-        $mapper    = new UserMapper($this->pdo);;
+        $mapper    = new UserMapper($this->pdo);
         $loginMan  = new LoginManager($mapper, $this->pdo);
         $userID = $loginMan->checkLoginForm($_POST);
         if ($userID !== false ) {
             $loginMan->persistLogin($userID);
         }
-        //в конце всех действий - редирект на главную страницу
+        //at the end of all actions - redirect to the main page
         $this->redirect('list.php');
     }
     
     function logout()
     {
-        $mapper    = new UserMapper($this->pdo);;
+        $mapper    = new UserMapper($this->pdo);
         $loginMan  = new LoginManager($mapper, $this->pdo);
         $loginMan->logout();
     }

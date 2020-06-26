@@ -1,8 +1,8 @@
 <?php
-namespace BeeJee\Database;
+namespace AppTask\Database;
 
 
-use BeeJee\User;
+use AppTask\User;
 
 class UserMapper
 {
@@ -25,7 +25,7 @@ class UserMapper
     function getUser($id)
     {
         try {
-            $sql = 'SELECT `name` FROM `beejee_users` WHERE `id` = :id';
+            $sql = 'SELECT `name` FROM `apptask_users` WHERE `id` = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
             $result = $stmt->execute();
@@ -34,7 +34,7 @@ class UserMapper
                 $result = new User($id, $assoc['name']);
             }
         } catch (\PDOException $e) {
-            throw new \Exception('Ошибка при получении пользователя.', 0, $e);
+            throw new \Exception('Ошибка получения пользователя.', 0, $e);
         }
         return $result;
     }
@@ -47,7 +47,7 @@ class UserMapper
     function getUserByName($name)
     {
         try {
-            $sql = 'SELECT `id`, `name` FROM `beejee_users` WHERE `name` = :name';
+            $sql = 'SELECT `id`, `name` FROM `apptask_users` WHERE `name` = :name';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':name', $name, \PDO::PARAM_INT);
             $result = $stmt->execute();
@@ -56,7 +56,7 @@ class UserMapper
                 $result = new User($assoc['id'], $assoc['name']);
             }
         } catch (\PDOException $e) {
-            throw new \Exception('Ошибка при получении пользователя.', 0, $e);
+            throw new \Exception('Ошибка получения пользователя.', 0, $e);
         }
         return $result;
     }
@@ -69,7 +69,7 @@ class UserMapper
     function getIdFromName($name)
     {
         try {
-            $sql = 'SELECT `id` FROM `beejee_users` WHERE `name` = :name';
+            $sql = 'SELECT `id` FROM `apptask_users` WHERE `name` = :name';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':name', $name);
             $result = $stmt->execute();
@@ -91,7 +91,7 @@ class UserMapper
     function addUser($name, $hash)
     {
         try {
-            $sql = 'INSERT INTO `beejee_users`(`name`, `hash`) VALUES (:name, :hash)';
+            $sql = 'INSERT INTO `apptask_users`(`name`, `hash`) VALUES (:name, :hash)';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':hash', $hash);
@@ -119,7 +119,7 @@ class UserMapper
     public function doesExist($username)
     {
         try {
-            $sql = 'SELECT `id` FROM `beejee_users` WHERE `name` = :name';
+            $sql = 'SELECT `id` FROM `apptask_users` WHERE `name` = :name';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':name', $username);
             $result = $stmt->execute();
@@ -140,7 +140,7 @@ class UserMapper
     function getHashFromUser($userID)
     {
         try {
-            $sql = 'SELECT `hash` FROM `beejee_users` WHERE `id` = :id';
+            $sql = 'SELECT `hash` FROM `apptask_users` WHERE `id` = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $userID, \PDO::PARAM_INT);
             $result = $stmt->execute();
@@ -164,7 +164,7 @@ class UserMapper
     function getHashByName($username)
     {
         try {
-            $sql = 'SELECT `hash` FROM `beejee_users` WHERE `name` = :name';
+            $sql = 'SELECT `hash` FROM `apptask_users` WHERE `name` = :name';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':name', $username);
             $result = $stmt->execute();
@@ -189,7 +189,7 @@ class UserMapper
     function changeHashForUser($username, $newHash)
     {
         try {
-            $sql = 'UPDATE `beejee_users` SET `hash` = :hash WHERE `name` = :name';
+            $sql = 'UPDATE `apptask_users` SET `hash` = :hash WHERE `name` = :name';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':name', $username);
             $stmt->bindParam(':hash', $newHash);
@@ -208,7 +208,7 @@ class UserMapper
     function deleteUser($userID)
     {
         try {
-            $sql = 'DELETE FROM `beejee_users` WHERE `id` = :id';
+            $sql = 'DELETE FROM `apptask_users` WHERE `id` = :id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $userID, \PDO::PARAM_INT);
             $result = $stmt->execute();

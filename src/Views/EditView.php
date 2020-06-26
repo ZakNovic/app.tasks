@@ -6,10 +6,10 @@
  * Time: 2:57
  */
 
-namespace BeeJee\Views;
+namespace AppTask\Views;
 
 
-use BeeJee\FileSystem;
+use AppTask\FileSystem;
 
 class EditView extends CommonView
 {
@@ -35,7 +35,7 @@ class EditView extends CommonView
     {
         ob_start();
         
-        //загружаем шаблон, который использует вышеописанные переменные
+        //load a template that uses above variables
         $template = $this->twig->load('edit.html.twig');
         echo $template->render(array(
             'task_id'    => $params['task_id'],

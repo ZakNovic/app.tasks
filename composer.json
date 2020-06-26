@@ -4,6 +4,6 @@
   },
 
   "autoload": {
-        "psr-4": {"BeeJee\\": "src/"}
+        "psr-4": {"AppTask\\": "src/"}
     }
 }
